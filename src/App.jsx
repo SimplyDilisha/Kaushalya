@@ -8,6 +8,7 @@ import JobListings from './pages/JobListings';
 import JobDetail from './pages/JobDetail';
 import EmployerDashboard from './pages/EmployerDashboard';
 import ChatbotPage from './pages/ChatbotPage';
+import faviconImg from './public/favicon.png';
 import './App.css';
 
 // Base accessible button component used throughout
@@ -83,21 +84,16 @@ const Header = () => {
       transition: 'all 0.3s ease'
     }}>
       <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-        <div style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          background: 'var(--primary-gradient)',
-          color: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: '800',
-          fontSize: '1.2rem',
-          boxShadow: '0 4px 10px var(--accent-purple-glow)'
-        }}>
-          A
-        </div>
+        <img 
+          src={faviconImg} 
+          alt="ApnaRozgaar logo"
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            boxShadow: '0 4px 10px var(--accent-purple-glow)'
+          }}
+        />
         <span style={{ fontWeight: '800', fontSize: '1.4rem', color: 'var(--text-primary)', fontFamily: "'Outfit', sans-serif", letterSpacing: '-0.02em' }}>
           ApnaRozgaar
         </span>
