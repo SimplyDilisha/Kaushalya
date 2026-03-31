@@ -102,11 +102,6 @@ const Header = ({ isHighContrast, toggleHighContrast, onOpenChat }) => {
         </span>
       </Link>
 
-      <nav className="desktop-nav" aria-label="Main Navigation" style={{ display: 'flex', gap: '24px', fontWeight: '600' }}>
-        <Link to="/jobs">Find Jobs</Link>
-        <Link to="/employer">For Employers</Link>
-        <Link to="/profile/create">My Profile</Link>
-      </nav>
 
       <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         {/* Chat with Asha button - Replaces theme toggle */}
@@ -168,7 +163,6 @@ const Header = ({ isHighContrast, toggleHighContrast, onOpenChat }) => {
               boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
             }}
           >
-            <Link onClick={() => setMobileMenuOpen(false)} to="/jobs" style={{ fontSize: '1.2rem' }}>Find Jobs</Link>
             <Link onClick={() => setMobileMenuOpen(false)} to="/employer" style={{ fontSize: '1.2rem' }}>For Employers</Link>
             <Link onClick={() => setMobileMenuOpen(false)} to="/profile/create" style={{ fontSize: '1.2rem' }}>My Profile</Link>
             <hr style={{ borderTop: '1px solid var(--border)', opacity: 0.5 }} />

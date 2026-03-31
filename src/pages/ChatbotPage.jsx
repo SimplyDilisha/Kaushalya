@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Send, Mic, MicOff, Volume2, VolumeX, 
-  Briefcase, FileText, HelpCircle, Accessibility, Sparkles,
+  Send, Mic, MicOff, Volume2, VolumeX, Sparkles,
   User, Bot, Loader2, RefreshCw, ArrowLeft, Heart, Star
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -13,10 +12,6 @@ const chatResponses = {
     "Hello! 👋 I'm Asha, your friendly assistant at ApnaRozgaar. I'm here to help you find inclusive job opportunities. How can I assist you today?",
     "Welcome! 🌟 I'm Asha, and I'm excited to help you on your career journey. What would you like to know?",
     "Hi there! 💜 I'm here to make your job search easier and more accessible. Ask me anything!"
-  ],
-  jobSearch: [
-    "Great question! 💼 To find accessible jobs:\n\n1. Go to 'Find Jobs' in the menu\n2. Use filters like 'Remote Work', 'Wheelchair Accessible', or 'Flexible Hours'\n3. Each job listing shows accommodation details\n\nWould you like me to explain any specific accessibility feature?",
-    "Finding the right job is exciting! 🎯 Our platform has 500+ verified accessible positions. You can filter by:\n• Work type (Remote/Hybrid/On-site)\n• Accessibility features\n• Industry\n• Experience level\n\nShall I help you create a profile to get personalized matches?"
   ],
   profile: [
     "Creating your profile is easy! 📝\n\n1. Click 'My Profile' in the menu\n2. Fill in your skills and experience\n3. Optionally share accommodation needs (100% confidential)\n4. Get matched with suitable employers!\n\nYour information helps us find the perfect fit. Need help with any step?",
@@ -73,14 +68,6 @@ const getResponse = (userMessage) => {
   
   return chatResponses.default[Math.floor(Math.random() * chatResponses.default.length)];
 };
-
-// Quick action buttons
-const quickActions = [
-  { icon: Briefcase, label: 'Find Jobs', query: 'How do I find accessible jobs?', color: '#7C3AED' },
-  { icon: FileText, label: 'My Profile', query: 'How do I create my profile?', color: '#0D9488' },
-  { icon: Accessibility, label: 'Accommodations', query: 'What accommodations are available?', color: '#D97706' },
-  { icon: HelpCircle, label: 'Get Help', query: 'What can you help me with?', color: '#059669' }
-];
 
 // Suggested questions
 const suggestedQuestions = [
@@ -326,61 +313,6 @@ const ChatbotPage = () => {
               background: '#4ADE80'
             }} />
             Online & Ready to Help
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div>
-          <h3 style={{ 
-            fontSize: '0.85rem', 
-            fontWeight: 600, 
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            marginBottom: '12px'
-          }}>
-            Quick Actions
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {quickActions.map((action, index) => (
-              <button
-                key={index}
-                onClick={() => sendMessage(action.query)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px 16px',
-                  background: 'var(--bg-primary)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '12px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = action.color;
-                  e.currentTarget.style.transform = 'translateX(4px)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'var(--border)';
-                  e.currentTarget.style.transform = 'translateX(0)';
-                }}
-              >
-                <div style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '10px',
-                  background: `${action.color}15`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <action.icon size={18} color={action.color} />
-                </div>
-                <span style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{action.label}</span>
-              </button>
-            ))}
           </div>
         </div>
 

@@ -13,10 +13,6 @@ const chatResponses = {
     "Welcome! 🌟 I'm Asha, and I'm excited to help you on your career journey. What would you like to know?",
     "Hi there! 💜 I'm here to make your job search easier and more accessible. Ask me anything!"
   ],
-  jobSearch: [
-    "Great question! 💼 To find accessible jobs:\n\n1. Go to 'Find Jobs' in the menu\n2. Use filters like 'Remote Work', 'Wheelchair Accessible', or 'Flexible Hours'\n3. Each job listing shows accommodation details\n\nWould you like me to explain any specific accessibility feature?",
-    "Finding the right job is exciting! 🎯 Our platform has 500+ verified accessible positions. You can filter by:\n• Work type (Remote/Hybrid/On-site)\n• Accessibility features\n• Industry\n• Experience level\n\nShall I help you create a profile to get personalized matches?"
-  ],
   profile: [
     "Creating your profile is easy! 📝\n\n1. Click 'My Profile' in the menu\n2. Fill in your skills and experience\n3. Optionally share accommodation needs (100% confidential)\n4. Get matched with suitable employers!\n\nYour information helps us find the perfect fit. Need help with any step?",
     "Your profile is your superpower! 💪 It helps employers understand your amazing skills. You can:\n• Add your work history\n• List certifications\n• Specify preferred work arrangements\n• Upload your resume\n\nAll accessibility info is optional and protected!"
@@ -73,13 +69,6 @@ const getResponse = (userMessage) => {
   return chatResponses.default[Math.floor(Math.random() * chatResponses.default.length)];
 };
 
-// Quick action buttons
-const quickActions = [
-  { icon: Briefcase, label: 'Find Jobs', query: 'How do I find accessible jobs?' },
-  { icon: FileText, label: 'My Profile', query: 'How do I create my profile?' },
-  { icon: Accessibility, label: 'Accommodations', query: 'What accommodations are available?' },
-  { icon: HelpCircle, label: 'Get Help', query: 'What can you help me with?' }
-];
 
 const AccessibleChatbot = ({ isOpen: externalIsOpen, onOpenChange }) => {
   // Use external state if provided, otherwise manage internally
