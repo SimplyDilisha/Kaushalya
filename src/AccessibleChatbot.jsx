@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MessageCircle, X, Send, Mic, MicOff, Volume2, VolumeX, 
+import {
+  MessageCircle, X, Send, Mic, MicOff, Volume2, VolumeX,
   Briefcase, FileText, HelpCircle, Accessibility, Sparkles,
-  ChevronDown, User, Bot, Loader2, RefreshCw
+  ChevronDown, User, Bot, Loader2, RefreshCw, Image as ImageIcon
 } from 'lucide-react';
+import { getAppContextImage, formatImageForDisplay } from './services/pexelsService';
 
 // Chatbot responses database - job platform focused
 const chatResponses = {
@@ -68,18 +69,61 @@ const keywordMap = {
   signLanguage: ['sign language', 'bsl', 'asl', 'isl', 'signing', 'interpreter', 'sign', 'caption', 'cart']
 };
 
-const getResponse = (userMessage) => {
+// Detect category from user message
+const detectCategory = (userMessage) => {
   const lowerMessage = userMessage.toLowerCase();
-  
+
   for (const [category, keywords] of Object.entries(keywordMap)) {
     if (keywords.some(keyword => lowerMessage.includes(keyword))) {
-      const responses = chatResponses[category];
-      return responses[Math.floor(Math.random() * responses.length)];
+      return category;
     }
   }
-  
-  return chatResponses.default[Math.floor(Math.random() * chatResponses.default.length)];
+
+  return 'default';
 };
+
+const getResponse = async (userMessage) => {
+  const category = detectCategory(userMessage);
+  const responses = chatResponses[category];
+  const text = responses[Math.floor(Math.random() * responses.length)];
+
+  // Fetch related image from Pexels
+  let image = null;
+  try {
+    const imageData = await getAppContextImage(category);
+    if (imageData) {
+      image = formatImageForDisplay(imageData);
+    }
+  } catch (error) {
+    console.error('Error fetching image:', error);
+  }
+
+  return { text, image };
+};
+
+// Quick action buttons for accessibility and app context
+const quickActions = [
+  {
+    label: 'Find Jobs',
+    query: 'Can you help me find accessible jobs?',
+    icon: Briefcase
+  },
+  {
+    label: 'Build Profile',
+    query: 'How do I create my profile?',
+    icon: FileText
+  },
+  {
+    label: 'Accommodations',
+    query: 'What accommodations are available?',
+    icon: Accessibility
+  },
+  {
+    label: 'Need Help?',
+    query: 'Can you help me navigate the platform?',
+    icon: HelpCircle
+  }
+];
 
 
 const AccessibleChatbot = ({ isOpen: externalIsOpen, onOpenChange }) => {
@@ -231,19 +275,22 @@ const AccessibleChatbot = ({ isOpen: externalIsOpen, onOpenChange }) => {
     // Stop any ongoing speech
     stopSpeaking();
 
-    // Simulate typing delay
+    // Simulate typing delay + wait for image fetch
     await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
+
+    const response = await getResponse(text);
 
     const botResponse = {
       id: Date.now() + 1,
       type: 'bot',
-      text: getResponse(text),
+      text: response.text,
+      image: response.image,
       timestamp: new Date()
     };
 
     setIsTyping(false);
     setMessages(prev => [...prev, botResponse]);
-    
+
     // Speak the response
     speakText(botResponse.text);
   };
@@ -501,59 +548,112 @@ const AccessibleChatbot = ({ isOpen: externalIsOpen, onOpenChange }) => {
                     width: '36px',
                     height: '36px',
                     borderRadius: '50%',
-                    background: message.type === 'user' 
-                      ? 'var(--teal-gradient)' 
+                    background: message.type === 'user'
+                      ? 'var(--teal-gradient)'
                       : 'var(--primary-gradient)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    {message.type === 'user' 
+                    {message.type === 'user'
                       ? <User size={18} color="white" />
                       : <Bot size={18} color="white" />
                     }
                   </div>
-                  
-                  {/* Message bubble */}
+
+                  {/* Message bubble with image support */}
                   <div style={{
                     maxWidth: '75%',
-                    padding: '14px 18px',
-                    borderRadius: message.type === 'user' 
-                      ? '20px 20px 4px 20px'
-                      : '20px 20px 20px 4px',
-                    background: message.type === 'user'
-                      ? 'var(--primary-gradient)'
-                      : 'var(--card-bg)',
-                    color: message.type === 'user' ? 'white' : 'var(--text-primary)',
-                    boxShadow: 'var(--card-shadow)',
-                    whiteSpace: 'pre-wrap',
-                    lineHeight: 1.5,
-                    fontSize: '0.95rem'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
                   }}>
-                    {message.text}
-                    
-                    {/* Speak button for bot messages */}
-                    {message.type === 'bot' && voiceEnabled && (
-                      <button
-                        onClick={() => speakText(message.text)}
-                        aria-label="Read this message aloud"
+                    {/* Image */}
+                    {message.image && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         style={{
-                          display: 'block',
-                          marginTop: '8px',
-                          padding: '4px 8px',
-                          background: 'rgba(124, 58, 237, 0.1)',
-                          border: '1px solid var(--accent-purple)',
                           borderRadius: '12px',
-                          cursor: 'pointer',
-                          fontSize: '0.75rem',
-                          color: 'var(--accent-purple)',
-                          transition: 'all 0.2s'
+                          overflow: 'hidden',
+                          boxShadow: 'var(--card-shadow)',
+                          maxHeight: '240px'
                         }}
                       >
-                        🔊 Read aloud
-                      </button>
+                        <img
+                          src={message.image.url}
+                          alt={message.image.alt}
+                          title={message.image.alt}
+                          style={{
+                            width: '100%',
+                            height: 'auto',
+                            display: 'block',
+                            maxHeight: '240px',
+                            objectFit: 'cover'
+                          }}
+                        />
+                        {message.image.photographer && (
+                          <div style={{
+                            fontSize: '0.7rem',
+                            padding: '4px 8px',
+                            background: 'rgba(0,0,0,0.5)',
+                            color: 'white',
+                            textAlign: 'center'
+                          }}>
+                            Photo by{' '}
+                            <a
+                              href={message.image.photographerUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: 'white', textDecoration: 'underline' }}
+                            >
+                              {message.image.photographer}
+                            </a>
+                          </div>
+                        )}
+                      </motion.div>
                     )}
+
+                    {/* Text message */}
+                    <div style={{
+                      padding: '14px 18px',
+                      borderRadius: message.type === 'user'
+                        ? '20px 20px 4px 20px'
+                        : '20px 20px 20px 4px',
+                      background: message.type === 'user'
+                        ? 'var(--primary-gradient)'
+                        : 'var(--card-bg)',
+                      color: message.type === 'user' ? 'white' : 'var(--text-primary)',
+                      boxShadow: 'var(--card-shadow)',
+                      whiteSpace: 'pre-wrap',
+                      lineHeight: 1.5,
+                      fontSize: '0.95rem'
+                    }}>
+                      {message.text}
+
+                      {/* Speak button for bot messages */}
+                      {message.type === 'bot' && voiceEnabled && (
+                        <button
+                          onClick={() => speakText(message.text)}
+                          aria-label="Read this message aloud"
+                          style={{
+                            display: 'block',
+                            marginTop: '8px',
+                            padding: '4px 8px',
+                            background: 'rgba(124, 58, 237, 0.1)',
+                            border: '1px solid var(--accent-purple)',
+                            borderRadius: '12px',
+                            cursor: 'pointer',
+                            fontSize: '0.75rem',
+                            color: 'var(--accent-purple)',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          🔊 Read aloud
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               ))}

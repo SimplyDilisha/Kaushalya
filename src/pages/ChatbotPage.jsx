@@ -5,6 +5,7 @@ import {
   User, Bot, Loader2, RefreshCw, ArrowLeft, Heart, Star
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getGeminiResponse, isGeminiConfigured } from '../services/geminiService';
 
 // Chatbot responses database - job platform focused
 const chatResponses = {
@@ -229,12 +230,30 @@ const ChatbotPage = () => {
 
     stopSpeaking();
 
-    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
+    let responseText;
+
+    // Try Gemini API first, fallback to local responses
+    if (isGeminiConfigured()) {
+      try {
+        const geminiResponse = await getGeminiResponse(text);
+        if (geminiResponse) {
+          responseText = geminiResponse;
+        } else {
+          responseText = getResponse(text);
+        }
+      } catch (error) {
+        console.error('Gemini error, using fallback:', error);
+        responseText = getResponse(text);
+      }
+    } else {
+      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
+      responseText = getResponse(text);
+    }
 
     const botResponse = {
       id: Date.now() + 1,
       type: 'bot',
-      text: getResponse(text),
+      text: responseText,
       timestamp: new Date()
     };
 
